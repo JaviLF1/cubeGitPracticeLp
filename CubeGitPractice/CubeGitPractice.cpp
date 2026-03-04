@@ -1,4 +1,4 @@
-#include <SFML/Graphics.hpp>
+﻿#include <SFML/Graphics.hpp>
 #include <vector>
 #include <fstream>
 #include <string>
@@ -24,6 +24,33 @@ int main()
 
     // Track Enter key state to prevent multiple placements
     bool enterPressed = false;
+
+    std::ifstream saveFile("data.txt");
+
+    std::string buildLine;
+
+    if (saveFile.good()) {
+        // cubeFile << "sf::Vector2f(" << positionNow.x << "," << positionNow.x << ")" << ";"
+
+        while (std::getline(saveFile, buildLine)) {
+
+            int comma = buildLine.find(',');
+
+            float xLodeCube = std::stof(buildLine.substr(0, comma));
+            float yLodeCube = std::stof(buildLine.substr(comma +1));
+
+            sf::RectangleShape lodeRect(sf::Vector2f(50.f, 50.f));
+
+            lodeRect.setPosition({ xLodeCube,yLodeCube });
+
+            placedSquares.push_back(lodeRect);
+
+
+        }
+
+    }
+
+
 
     // Main game loop
     while (window.isOpen())
@@ -56,22 +83,22 @@ int main()
         // Handle Enter key to place a square
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
         {
-            //if (!enterPressed) // Only place once per key press
+            if (!enterPressed) { // Only place once per key press
 
                 // Create a copy of the current square
-            sf::RectangleShape newSquare = square;
-            placedSquares.push_back(newSquare);
-            enterPressed = true;
+                sf::RectangleShape newSquare = square;
+                placedSquares.push_back(newSquare);
+                enterPressed = true;
 
-            sf::Vector2f positionNow = square.getPosition();
-
-
-
-            std::fstream cubeFile("data.txt", std::ios::app | std::ios::out);
+                sf::Vector2f positionNow = square.getPosition();
 
 
-            cubeFile << "sf::Vector2f(" << positionNow.x << "," << positionNow.x << ")" << ";"<<std::endl;
 
+                std::fstream cubeFile("data.txt", std::ios::app | std::ios::out);
+
+
+                cubeFile << positionNow.x << "," << positionNow.y << std::endl;
+            }
         }
         else
         {
